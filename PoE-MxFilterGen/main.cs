@@ -12,7 +12,7 @@ namespace PoE_MxFilterGen
     {
         private static DateTime dt = DateTime.Now;
 
-        public static string version = "1.0.3";
+        public static string version = "1.0.4";
         public static string release = "stable";
         public static string fDate = string.Format("{0}-{1}-{2}",dt.Day,dt.Month,dt.Year);
 
@@ -23,6 +23,16 @@ namespace PoE_MxFilterGen
             msg.CMW(string.Format("League: {0}", json.settings.GetLeague()), true, 1);
             msg.CMW(string.Format("Confidence: {0}", json.settings.GetConfidence().ToString()), true, 1);
             msg.CMW(string.Format("Minimum Value: {0}c", json.settings.GetMinimumValue().ToString()), true, 1);
+
+            // Check if data and gen exists
+            if (!Directory.Exists(@"data\"))
+            {
+                Directory.CreateDirectory(@"data\");
+            }
+            if (!Directory.Exists(@"gen\"))
+            {
+                Directory.CreateDirectory(@"gen\");
+            }
 
             // Clean all generated data
             DirectoryInfo dataDir = new DirectoryInfo(@"data\");

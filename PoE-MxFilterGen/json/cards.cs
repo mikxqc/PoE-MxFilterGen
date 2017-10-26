@@ -10,8 +10,8 @@ namespace PoE_MxFilterGen.json
 {
     public class SparklineCard
     {
-        public List<double> data { get; set; }
-        public double totalChange { get; set; }
+        public List<double?> data { get; set; }
+        public double? totalChange { get; set; }
     }
 
     public class ExplicitModifierCard

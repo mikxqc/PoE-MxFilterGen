@@ -1,0 +1,6 @@
+[October 26, 2017][1.0.4]
+F	Fixed 3 crashes due to "not nullable variables".
+F	Will now verify if \data and \gen exists and create them if they don't.
+
+
+
