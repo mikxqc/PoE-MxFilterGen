@@ -6,3 +6,11 @@ D:\_MxGit\PoE-MxFilterGen\PoE-MxFilterGen\obj\Debug\mxfiltergen.exe
 D:\_MxGit\PoE-MxFilterGen\PoE-MxFilterGen\obj\Debug\mxfiltergen.pdb
 D:\_MxGit\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\Newtonsoft.Json.dll
 D:\_MxGit\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\Newtonsoft.Json.xml
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\mxfiltergen.exe.config
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\mxfiltergen.exe
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\mxfiltergen.pdb
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\Newtonsoft.Json.dll
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\bin\Debug\Newtonsoft.Json.xml
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\obj\Debug\PoE-MxFilterGen.csprojResolveAssemblyReference.cache
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\obj\Debug\mxfiltergen.exe
+D:\_MxGitHub\PoE-MxFilterGen\PoE-MxFilterGen\obj\Debug\mxfiltergen.pdb

@@ -118,15 +118,10 @@ namespace PoE_MxFilterGen
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("");
-            Console.WriteLine(@"############################");
-            Console.WriteLine(@"#                          #");
-            Console.WriteLine(@"#       MxFilterGen        #");
-            Console.WriteLine(@"#         by mikx          #");
-            Console.WriteLine(@"#       poe.mikx.xyz       #");
-            Console.WriteLine(@"#                          #");
-            Console.WriteLine(@"#--------------------------#");
-            Console.WriteLine(String.Format("#  MxFilterGen {0}-{1}   #", main.version, main.release));
-            Console.WriteLine(@"############################");
+            Console.WriteLine("#### MxFilterGen");
+            Console.WriteLine(string.Format("#### VERSION: {0}",main.version));
+            Console.WriteLine("#### DEV: mikx");
+            Console.WriteLine("#### POWERED BY: poe.ninja");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.White;
         }

@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace PoE_MxFilterGen.json
 {
-    public class SparklineAccessory
+    public class ChanceSparklineQuiver
     {
         public List<double?> data { get; set; }
         public double? totalChange { get; set; }
     }
 
-    public class ExplicitModifierAccessory
+    public class ChanceExplicitModifierQuiver
     {
         public string text { get; set; }
         public bool optional { get; set; }
     }
 
-    public class LineAccessory
+    public class ChanceLineQuiver
     {
         public int id { get; set; }
         public string name { get; set; }
@@ -34,9 +34,9 @@ namespace PoE_MxFilterGen.json
         public object artFilename { get; set; }
         public int links { get; set; }
         public int itemClass { get; set; }
-        public SparklineAccessory sparkline { get; set; }
+        public ChanceSparklineQuiver sparkline { get; set; }
         public List<object> implicitModifiers { get; set; }
-        public List<ExplicitModifierAccessory> explicitModifiers { get; set; }
+        public List<ChanceExplicitModifierQuiver> explicitModifiers { get; set; }
         public string flavourText { get; set; }
         public string itemType { get; set; }
         public double chaosValue { get; set; }
@@ -44,27 +44,27 @@ namespace PoE_MxFilterGen.json
         public int count { get; set; }
     }
 
-    public class RootAccessory
+    public class ChanceRootQuiver
     {
-        public List<LineAccessory> lines { get; set; }
+        public List<LineWeapon> lines { get; set; }
     }
 
-    class accessories
+    class chanceQuiver
     {
         private static string iB;
 
-        public static void GenAccessories(string section)
+        public static void ChanceGenQuiver(string section)
         {
             List<string> itemBase = new List<string>();
-            RootAccessory j = JsonConvert.DeserializeObject<RootAccessory>(File.ReadAllText("data/ninja.accessory.json", Encoding.UTF8));
+            ChanceRootBoots j = JsonConvert.DeserializeObject<ChanceRootBoots>(File.ReadAllText("data/ninja.armour.json", Encoding.UTF8));
 
             foreach (var ln in j.lines)
             {
                 // Check if the item count is at least equal to the desired confidence level
-                if (ln.count >= json.settings.GetConfidence())
+                if (ln.count >= json.settings.GetConfidence() && ln.links <= 4 && ln.itemType == "Quiver")
                 {
                     // Check if the item value is equal or superior to the minimum value
-                    if (ln.chaosValue >= json.settings.GetMinimumValue())
+                    if (ln.chaosValue >= json.settings.GetChancingMinValue())
                     {
                         if (json.settings.GetVerbose())
                         {
@@ -84,12 +84,11 @@ namespace PoE_MxFilterGen.json
             File.AppendAllText(fn, "" + Environment.NewLine, Encoding.UTF8);
             File.AppendAllText(fn, "Show" + Environment.NewLine, Encoding.UTF8);
             File.AppendAllText(fn, "    BaseType" + iB + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(fn, "    Rarity = Unique" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(fn, "    SetTextColor 222 95 0" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(fn, "    SetBackgroundColor 255 255 255" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(fn, "    SetBorderColor 180 96 0" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(fn, "    SetFontSize 45" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(fn, "    PlayAlertSound 8 300", Encoding.UTF8);
+            File.AppendAllText(fn, "    Rarity = Normal" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    ItemLevel >= 2" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetTextColor 50 230 100" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetBorderColor 50 230 100" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetFontSize 40", Encoding.UTF8);
         }
     }
 }

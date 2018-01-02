@@ -14,6 +14,8 @@ namespace PoE_MxFilterGen.json
         public string league { get; set; }
         public int confidence { get; set; }
         public int minimumValue { get; set; }
+        public int chancingMinValue { get; set; }
+        public bool verbose { get; set; }
     }
 
     class settings
@@ -40,6 +42,18 @@ namespace PoE_MxFilterGen.json
         {
             SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
             return j.minimumValue;
+        }
+
+        public static int GetChancingMinValue()
+        {
+            SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
+            return j.chancingMinValue;
+        }
+
+        public static bool GetVerbose()
+        {
+            SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
+            return j.verbose;
         }
     }
 }

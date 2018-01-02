@@ -53,7 +53,7 @@ namespace PoE_MxFilterGen.json
     {
         private static string iB;
 
-        public static void GenCards()
+        public static void GenCards(string section)
         {
             List<string> itemBase = new List<string>();
             RootCard j = JsonConvert.DeserializeObject<RootCard>(File.ReadAllText("data/ninja.card.json", Encoding.UTF8));
@@ -66,7 +66,10 @@ namespace PoE_MxFilterGen.json
                     // Check if the item value is equal or superior to the minimum value
                     if (ln.chaosValue >= json.settings.GetMinimumValue())
                     {
-                        msg.CMW(string.Format("[{0}][{1}c] Added to the list.", ln.name, ln.chaosValue), true, 1);
+                        if (json.settings.GetVerbose())
+                        {
+                            msg.CMW(string.Format("[{0}][{1}c] Added to the list.", ln.name, ln.chaosValue), true, 1);
+                        }                    
                         if (!itemBase.Contains(ln.name))
                         {
                             itemBase.Add(ln.name);
@@ -76,16 +79,17 @@ namespace PoE_MxFilterGen.json
                 }
             }
 
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "## Cards Gen" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "Show" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", @"    Class ""Divination Card""" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    BaseType" + iB + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetTextColor 20 65 110" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetBackgroundColor 224 224 224" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetBorderColor 57 97 145" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetFontSize 45" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    PlayAlertSound 5 300" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "## END #######" + Environment.NewLine + Environment.NewLine, Encoding.UTF8);
+            string fn = @"gen\"+section+".filter";
+            File.AppendAllText(fn, string.Format("# Section: {0}",section) + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "Show" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, @"    Class ""Divination Card""" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    BaseType" + iB + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetTextColor 20 65 110" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetBackgroundColor 224 224 224" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetBorderColor 57 97 145" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetFontSize 45" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    PlayAlertSound 5 300", Encoding.UTF8);
         }
     }
 }

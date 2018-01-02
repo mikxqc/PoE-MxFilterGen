@@ -53,7 +53,7 @@ namespace PoE_MxFilterGen.json
     {
         private static string iB;
 
-        public static void GenWeapons()
+        public static void GenWeapons(string section)
         {
             List<string> itemBase = new List<string>();
             RootWeapon j = JsonConvert.DeserializeObject<RootWeapon>(File.ReadAllText("data/ninja.weapon.json", Encoding.UTF8));
@@ -66,7 +66,10 @@ namespace PoE_MxFilterGen.json
                     // Check if the item value is equal or superior to the minimum value
                     if (ln.chaosValue >= json.settings.GetMinimumValue())
                     {
-                        msg.CMW(string.Format("[{0}][{1}c] Added to the list.",ln.baseType,ln.chaosValue), true, 1);
+                        if (json.settings.GetVerbose())
+                        {
+                            msg.CMW(string.Format("[{0}][{1}c] Added to the list.", ln.name, ln.chaosValue), true, 1);
+                        }
                         if (!itemBase.Contains(ln.baseType))
                         {
                             itemBase.Add(ln.baseType);
@@ -76,16 +79,17 @@ namespace PoE_MxFilterGen.json
                 }
             }
 
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "## Weapons Gen" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "Show" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    BaseType" + iB + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    Rarity = Unique" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetTextColor 222 95 0" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetBackgroundColor 255 255 255" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetBorderColor 180 96 0" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    SetFontSize 45" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "    PlayAlertSound 8 300" + Environment.NewLine, Encoding.UTF8);
-            File.AppendAllText(@"gen\" + main.fDate + "_gen.txt", "## END #######" + Environment.NewLine + Environment.NewLine, Encoding.UTF8);
+            string fn = @"gen\" + section + ".filter";
+            File.AppendAllText(fn, string.Format("# Section: {0}", section) + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "Show" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    BaseType" + iB + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    Rarity = Unique" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetTextColor 222 95 0" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetBackgroundColor 255 255 255" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetBorderColor 180 96 0" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    SetFontSize 45" + Environment.NewLine, Encoding.UTF8);
+            File.AppendAllText(fn, "    PlayAlertSound 8 300", Encoding.UTF8);
         }
     }
 }

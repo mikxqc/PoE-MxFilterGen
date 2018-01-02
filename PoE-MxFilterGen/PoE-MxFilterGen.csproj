@@ -31,6 +31,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Chaos_Orb.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -48,8 +51,15 @@
     <Compile Include="json\accessories.cs" />
     <Compile Include="json\armours.cs" />
     <Compile Include="json\cards.cs" />
+    <Compile Include="json\chanceBelt.cs" />
+    <Compile Include="json\chanceShield.cs" />
+    <Compile Include="json\chanceQuiver.cs" />
+    <Compile Include="json\chanceHelmet.cs" />
+    <Compile Include="json\chanceGloves.cs" />
+    <Compile Include="json\chanceBoots.cs" />
     <Compile Include="json\maps.cs" />
     <Compile Include="json\settings.cs" />
+    <Compile Include="json\chanceBody.cs" />
     <Compile Include="json\weapons.cs" />
     <Compile Include="main.cs" />
     <Compile Include="msg.cs" />
@@ -59,6 +69,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Chaos_Orb.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
