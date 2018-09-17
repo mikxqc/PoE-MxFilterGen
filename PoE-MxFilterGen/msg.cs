@@ -78,7 +78,37 @@ namespace PoE_MxFilterGen
 
         public static void CMW(string msg, bool time, int color)
         {
-            string date = String.Format("{0}:{1}:{2}", DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+            string seconds = "";
+            string minutes = "";
+            string hours = "";
+            if (DateTime.Now.Second < 10)
+            {
+                seconds = String.Format("0{0}", DateTime.Now.Second);
+            }
+            else
+            {
+                seconds = DateTime.Now.Second.ToString();
+            }
+
+            if (DateTime.Now.Minute < 10)
+            {
+                minutes = String.Format("0{0}", DateTime.Now.Minute);
+            }
+            else
+            {
+                minutes = DateTime.Now.Minute.ToString();
+            }
+
+            if (DateTime.Now.Hour < 10)
+            {
+                hours = String.Format("0{0}", DateTime.Now.Hour);
+            }
+            else
+            {
+                hours = DateTime.Now.Hour.ToString();
+            }
+
+            string date = String.Format("{0}:{1}:{2}", hours, minutes, seconds);
 
             File.AppendAllText("mxfiltergen.logs", String.Format("[{0}] {1}", date, msg) + Environment.NewLine);
 
