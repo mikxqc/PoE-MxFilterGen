@@ -12,7 +12,6 @@ namespace PoE_MxFilterGen.json
     {
         public string git { get; set; }
         public string api { get; set; }
-        public string league { get; set; }
         public int confidence { get; set; }
         public int minimumValue { get; set; }
         public int chancingMinValue { get; set; }
@@ -33,12 +32,6 @@ namespace PoE_MxFilterGen.json
         {
             SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
             return j.api;
-        }
-
-        public static string GetLeague()
-        {
-            SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
-            return j.league;
         }
 
         public static int GetConfidence()
@@ -84,7 +77,6 @@ namespace PoE_MxFilterGen.json
             {
                 git = js.git,
                 api = js.api,
-                league = js.league,
                 confidence = js.confidence,
                 minimumValue = js.minimumValue,
                 chancingMinValue = js.chancingMinValue,
