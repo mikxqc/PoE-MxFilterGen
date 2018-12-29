@@ -144,6 +144,56 @@ namespace PoE_MxFilterGen
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+        public static void drawProgress(int progress, int total)
+        {
+            string seconds = "";
+            string minutes = "";
+            string hours = "";
+            if (DateTime.Now.Second < 10)
+            {
+                seconds = String.Format("0{0}", DateTime.Now.Second);
+            }
+            else
+            {
+                seconds = DateTime.Now.Second.ToString();
+            }
+
+            if (DateTime.Now.Minute < 10)
+            {
+                minutes = String.Format("0{0}", DateTime.Now.Minute);
+            }
+            else
+            {
+                minutes = DateTime.Now.Minute.ToString();
+            }
+
+            if (DateTime.Now.Hour < 10)
+            {
+                hours = String.Format("0{0}", DateTime.Now.Hour);
+            }
+            else
+            {
+                hours = DateTime.Now.Hour.ToString();
+            }
+            string date = String.Format("{0}:{1}:{2}", hours, minutes, seconds);
+            string beg = String.Format("[{0}] [", date);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            if (progress == 1)
+            {              
+                Console.Write(beg);
+                Console.CursorLeft = total+beg.Length;
+                Console.Write("]");
+            }
+            Console.CursorLeft = (progress + beg.Length)-1;
+            Console.Write($"#");
+            Console.CursorLeft = beg.Length + total + 2;
+            Console.Write($"{progress}/{total}");
+            if (progress == total)
+            {
+                Console.WriteLine();
+            }
+        }
+
         public static void Splash()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;

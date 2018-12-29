@@ -17,14 +17,20 @@ namespace PoE_MxFilterGen
     {
         private static DateTime dt = DateTime.Now;
 
-        public static string version = "5.0.0";
+        public static string version = "5.2.1";
         public static string fDate = string.Format("{0}-{1}-{2}", dt.Day, dt.Month, dt.Year);
 
         public static string section = "";
         public static string league = "";
         public static string path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-        private static string giturl = json.settings.GetGIT();
+        public static int fprog = 0;
+        public static int ftotal = 0;
+
+        public static int sprog = 0;
+        public static int stotal = 0;
+
+        private static string giturl = "";
 
         public class REMVAR
         {
@@ -52,13 +58,21 @@ namespace PoE_MxFilterGen
 
         static void Main(string[] args)
         {
+            // Check for the settings json
+            if (!File.Exists("settings.json"))
+            {
+                msg.CMW("ERROR: settings.json not found! Downloading a template...", true, 3);
+                web.DownloadFile("https://data.mxnet.xyz/poe/json/mxfiltergen_temp_settings.json", "settings.json");
+            }
+
+            web.DownloadFile("https://data.mxnet.xyz/poe/bin/mxfiltergen_updater.exe", "PoE-MxFilterGen-Updater.exe");
+
             msg.Splash();
 
             // Get current league from MxD
             var ls = web.ReadString("https://data.mxnet.xyz/poe/json/mxfiltergen_var.json");
             REMVAR lj = JsonConvert.DeserializeObject<REMVAR>(ls);
-            league = lj.league;
-            msg.CMW(league, true, 1);
+            league = lj.league;           
 
             msg.CMW(string.Format("GIT: {0}", json.settings.GetGIT()), true, 1);
             msg.CMW(string.Format("API: {0}", json.settings.GetAPI()), true, 1);
@@ -69,6 +83,8 @@ namespace PoE_MxFilterGen
             msg.CMW(string.Format("Verbose: {0}", json.settings.GetVerbose().ToString()), true, 1);
             msg.CMW(string.Format("Strict: {0}", json.settings.GetStrict().ToString()), true, 1);
 
+            giturl = json.settings.GetGIT();
+
             // Check for updates
             string remote_version = web.ReadString(@"https://data.mxnet.xyz/poe/txt/mxfiltergen_version.txt");
             if (version != remote_version)
@@ -76,7 +92,7 @@ namespace PoE_MxFilterGen
                 Process.Start("PoE-MxFilterGen-Updater.exe");
                 //Process.GetCurrentProcess().Kill();
             } else
-            {
+            {                
                 // Check if all the required dir exists
                 msg.CMW($"Checking for required dirs...",true,1);
                 if (!Directory.Exists(@"data\"))
@@ -136,11 +152,14 @@ namespace PoE_MxFilterGen
                 // Read the structure one by one to process gen
                 // Generator (dlls) are downloaded from the web and executed in a separate AppDomain before the AD is unloaded to execute a new generator.
                 // As we CAN'T unload an assembly, using AppDomains is the only way we can load/unload multiple assembly in a row.
-                msg.CMW($@"Generating the filter using {j.structures.Count} data...", true, 1);
+                msg.CMW($@"Generating the filter using {j.structures.Count} source(s)...", true, 1);
+                ftotal = j.structures.Count;
                 foreach (var sec in j.structures)
                 {
                     if (sec.gen == true)
                     {
+                        fprog = fprog + 1;
+                        msg.drawProgress(fprog, ftotal);
                         //msg.CMW(string.Format("REMOTE_GEN {0}", sec.section), true, 1);
                         web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/{structure_name}/{sec.section}.dll", $@"structure\{sec.section}.dll");
                         json.settings.WriteSection(sec.section);
@@ -160,6 +179,8 @@ namespace PoE_MxFilterGen
                     }
                     else
                     {
+                        fprog = fprog + 1;
+                        msg.drawProgress(fprog, ftotal);
                         //msg.CMW($@"REMOTE_GET {sec.section}", true, 1);
                         web.SaveString($@"{giturl}/PoE-MxFilter-Structure/master/{structure_name}/{sec.section}.filter", $"structure/{sec.section}.filter");
                     }
@@ -189,8 +210,11 @@ namespace PoE_MxFilterGen
                 msg.CMW($@"Downloading the latest sound...", true, 1);
                 var sl = web.ReadString("https://data.mxnet.xyz/poe/json/mxfiltergen_sound.json");
                 REMSND slj = JsonConvert.DeserializeObject<REMSND>(sl);
+                stotal = slj.sound.Count;
                 foreach (string s in slj.sound)
                 {
+                    sprog = sprog + 1;
+                    msg.drawProgress(sprog, stotal);
                     if (File.Exists($@"{path}\My Games\Path of Exile\{s}")) { File.Delete($@"{path}\My Games\Path of Exile\{s}"); }
                     web.DownloadFile($"https://data.mxnet.xyz/poe/mp3/{s}",$@"{path}\My Games\Path of Exile\{s}");
                 }
