@@ -17,7 +17,7 @@ namespace PoE_MxFilterGen
     {
         private static DateTime dt = DateTime.Now;
 
-        public static string version = "6.0.1";
+        public static string version = "6.1.0";
         public static string fDate = string.Format("{0}-{1}-{2}", dt.Day, dt.Month, dt.Year);
 
         public static string section = "";
@@ -131,7 +131,9 @@ namespace PoE_MxFilterGen
                 // Get Theme File(s)
                 web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/Chancing.json", @"structure\Chancing.json");
 
-                string[] filters = { "Normal", "Strict" };
+                // Generate Filter Array
+                string[] filters;
+                if (json.settings.GetStrict()) { filters = new string[] { "Normal", "Strict" }; } else { filters = new string[] { "Normal" }; }
 
                 foreach(string f in filters)
                 {
