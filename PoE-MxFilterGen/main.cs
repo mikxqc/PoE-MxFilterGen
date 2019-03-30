@@ -17,7 +17,7 @@ namespace PoE_MxFilterGen
     {
         private static DateTime dt = DateTime.Now;
 
-        public static string version = "5.2.1";
+        public static string version = "6.0.1";
         public static string fDate = string.Format("{0}-{1}-{2}", dt.Day, dt.Month, dt.Year);
 
         public static string section = "";
@@ -29,6 +29,8 @@ namespace PoE_MxFilterGen
 
         public static int sprog = 0;
         public static int stotal = 0;
+
+        public static bool deb = false;
 
         private static string giturl = "";
 
@@ -87,7 +89,7 @@ namespace PoE_MxFilterGen
 
             // Check for updates
             string remote_version = web.ReadString(@"https://data.mxnet.xyz/poe/txt/mxfiltergen_version.txt");
-            if (version != remote_version)
+            if (version != remote_version && deb == false)
             {                  
                 Process.Start("PoE-MxFilterGen-Updater.exe");
                 //Process.GetCurrentProcess().Kill();
@@ -110,25 +112,13 @@ namespace PoE_MxFilterGen
 
                 // Clean all generated data
                 msg.CMW($"Cleaning the base dirs...", true, 1);
-                DirectoryInfo dataDir = new DirectoryInfo(@"data\");
-                DirectoryInfo genDir = new DirectoryInfo(@"gen\");
-                DirectoryInfo strucDir = new DirectoryInfo(@"structure\");
-                foreach (FileInfo file in dataDir.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (FileInfo file in genDir.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (FileInfo file in strucDir.GetFiles())
-                {
-                    file.Delete();
-                }
+                CleanDirData();
 
                 // Clean the latest generated filter from settings path
                 msg.CMW($"Cleaning the last filter from path...", true, 1);
-                File.Delete($@"{path}\My Games\Path of Exile\MxFilter.filter");
+                File.Delete($@"{path}\My Games\Path of Exile\MxFilter_Normal.filter");
+                File.Delete($@"{path}\My Games\Path of Exile\MxFilter_Strict.filter");
+                if (File.Exists($@"{path}\My Games\Path of Exile\MxFilter.filter")) { File.Delete($@"{path}\My Games\Path of Exile\MxFilter.filter"); }
 
                 // Get latest poe.ninja api
                 msg.CMW($"Downloading the latest API data from poe.ninja...", true, 1);
@@ -136,75 +126,82 @@ namespace PoE_MxFilterGen
                 web.SaveString(json.settings.GetAPI() + "GetUniqueWeaponOverview?league=" + league, "data/ninja.weapon.json");
                 web.SaveString(json.settings.GetAPI() + "GetUniqueAccessoryOverview?league=" + league, "data/ninja.accessory.json");
                 web.SaveString(json.settings.GetAPI() + "GetUniqueMapOverview?league=" + league, "data/ninja.map.json");
-                web.SaveString(json.settings.GetAPI() + "GetDivinationCardsOverview?league=" + league, "data/ninja.card.json");
-
-                // Setup basic variable
-                string structure_name = $"{league}";
-                string filter_name = "MxFilter";
-
-                // Get the structure list
-                var js = web.ReadString($@"{giturl}/PoE-MxFilter-Structure/master/{structure_name}.json");
-                RootStructure j = JsonConvert.DeserializeObject<RootStructure>(js);
+                web.SaveString(json.settings.GetAPI() + "GetDivinationCardsOverview?league=" + league, "data/ninja.card.json");               
 
                 // Get Theme File(s)
-                web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/{structure_name}/Chancing.json", @"structure\Chancing.json");
+                web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/Chancing.json", @"structure\Chancing.json");
 
-                // Read the structure one by one to process gen
-                // Generator (dlls) are downloaded from the web and executed in a separate AppDomain before the AD is unloaded to execute a new generator.
-                // As we CAN'T unload an assembly, using AppDomains is the only way we can load/unload multiple assembly in a row.
-                msg.CMW($@"Generating the filter using {j.structures.Count} source(s)...", true, 1);
-                ftotal = j.structures.Count;
-                foreach (var sec in j.structures)
+                string[] filters = { "Normal", "Strict" };
+
+                foreach(string f in filters)
                 {
-                    if (sec.gen == true)
-                    {
-                        fprog = fprog + 1;
-                        msg.drawProgress(fprog, ftotal);
-                        //msg.CMW(string.Format("REMOTE_GEN {0}", sec.section), true, 1);
-                        web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/{structure_name}/{sec.section}.dll", $@"structure\{sec.section}.dll");
-                        json.settings.WriteSection(sec.section);
-                        var bytes = GenerateAssemblyAndGetRawBytes(sec.section);
+                    // Setup basic variable
+                    string filter_name = "MxFilter";
 
-                        var appDomain = AppDomain.CreateDomain(sec.section, null, new AppDomainSetup
+                    // Get the structure list
+                    var js = web.ReadString($@"{giturl}/PoE-MxFilter-Structure/master/{f}.json");
+                    RootStructure j = JsonConvert.DeserializeObject<RootStructure>(js);
+
+                    // Read the structure one by one to process gen
+                    // Generator (dlls) are downloaded from the web and executed in a separate AppDomain before the AD is unloaded to execute a new generator.
+                    // As we CAN'T unload an assembly, using AppDomains is the only way we can load/unload multiple assembly in a row.
+                    msg.CMW($@"Generating the {f} filter using {j.structures.Count} source(s)...", true, 1);
+                    ftotal = j.structures.Count;
+                    foreach (var sec in j.structures)
+                    {
+                        if (sec.gen == true)
                         {
-                            ShadowCopyFiles = "true",
-                            LoaderOptimization = LoaderOptimization.MultiDomainHost
-                        });
+                            fprog = fprog + 1;
+                            msg.drawProgress(fprog, ftotal);
+                            //msg.CMW(string.Format("REMOTE_GEN {0}", sec.section), true, 1);
+                            web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/{f}/{sec.section}.dll", $@"structure\{sec.section}.dll");
+                            json.settings.WriteSection(sec.section);
+                            var bytes = GenerateAssemblyAndGetRawBytes(sec.section);
 
-                        var assmblyLoaderType = typeof(AssmeblyLoader);
-                        var assemblyLoader = (IAssemblyLoader)appDomain.CreateInstanceFromAndUnwrap(assmblyLoaderType.Assembly.Location, assmblyLoaderType.FullName);
-                        assemblyLoader.Load(bytes);
+                            var appDomain = AppDomain.CreateDomain(sec.section, null, new AppDomainSetup
+                            {
+                                ShadowCopyFiles = "true",
+                                LoaderOptimization = LoaderOptimization.MultiDomainHost
+                            });
 
-                        AppDomain.Unload(appDomain);
-                    }
-                    else
-                    {
-                        fprog = fprog + 1;
-                        msg.drawProgress(fprog, ftotal);
-                        //msg.CMW($@"REMOTE_GET {sec.section}", true, 1);
-                        web.SaveString($@"{giturl}/PoE-MxFilter-Structure/master/{structure_name}/{sec.section}.filter", $"structure/{sec.section}.filter");
-                    }
-                }
+                            var assmblyLoaderType = typeof(AssmeblyLoader);
+                            var assemblyLoader = (IAssemblyLoader)appDomain.CreateInstanceFromAndUnwrap(assmblyLoaderType.Assembly.Location, assmblyLoaderType.FullName);
+                            assemblyLoader.Load(bytes);
 
-                // Create the final filter.
-                msg.CMW($@"Creating the final filter...", true, 1);
-                foreach (var sec in j.structures)
-                {
-                    if (sec.gen == true)
-                    {
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", File.ReadAllText(string.Format("gen\\{0}.filter", sec.section)));
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", "" + Environment.NewLine);
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", "" + Environment.NewLine);
+                            AppDomain.Unload(appDomain);
+                        }
+                        else
+                        {
+                            fprog = fprog + 1;
+                            msg.drawProgress(fprog, ftotal);
+                            //msg.CMW($@"REMOTE_GET {sec.section}", true, 1);
+                            web.SaveString($@"{giturl}/PoE-MxFilter-Structure/master/{f}/{sec.section}.filter", $"structure/{sec.section}.filter");
+                        }
                     }
-                    else
+
+                    // Create the final filter.
+                    msg.CMW($@"Creating the final filter...", true, 1);
+                    foreach (var sec in j.structures)
                     {
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", string.Format("# Section: {0}", sec.section) + Environment.NewLine);
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", "" + Environment.NewLine);
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", File.ReadAllText(string.Format("structure\\{0}.filter", sec.section)));
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", "" + Environment.NewLine);
-                        File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}.filter", "" + Environment.NewLine);
+                        if (sec.gen == true)
+                        {
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", File.ReadAllText(string.Format("gen\\{0}.filter", sec.section)));
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", "" + Environment.NewLine);
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", "" + Environment.NewLine);
+                        }
+                        else
+                        {
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", string.Format("# Section: {0}", sec.section) + Environment.NewLine);
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", "" + Environment.NewLine);
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", File.ReadAllText(string.Format("structure\\{0}.filter", sec.section)));
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", "" + Environment.NewLine);
+                            File.AppendAllText($@"{path}\My Games\Path of Exile\{filter_name}_{f}.filter", "" + Environment.NewLine);
+                        }
                     }
-                }
+                    ftotal = 0;
+                    fprog = 0;
+                    CleanDir();
+                }             
 
                 // Download the sounds from the remote list
                 msg.CMW($@"Downloading the latest sound...", true, 1);
@@ -220,14 +217,7 @@ namespace PoE_MxFilterGen
                 }
 
                 // Clean all generated data
-                foreach (FileInfo file in genDir.GetFiles())
-                {
-                    file.Delete();
-                }
-                foreach (FileInfo file in strucDir.GetFiles())
-                {
-                    file.Delete();
-                }
+                CleanDirData();
             }            
         }
 
@@ -236,6 +226,39 @@ namespace PoE_MxFilterGen
             string lp = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var path = $@"{lp}\structure\{dll}.dll";
             return File.ReadAllBytes(path);
+        }
+
+        public static void CleanDirData()
+        {
+            DirectoryInfo dataDir = new DirectoryInfo(@"data\");
+            DirectoryInfo genDir = new DirectoryInfo(@"gen\");
+            DirectoryInfo strucDir = new DirectoryInfo(@"structure\");
+            foreach (FileInfo file in dataDir.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (FileInfo file in genDir.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (FileInfo file in strucDir.GetFiles())
+            {
+                file.Delete();
+            }
+        }
+
+        public static void CleanDir()
+        {
+            DirectoryInfo genDir = new DirectoryInfo(@"gen\");
+            DirectoryInfo strucDir = new DirectoryInfo(@"structure\");
+            foreach (FileInfo file in genDir.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (FileInfo file in strucDir.GetFiles())
+            {
+                file.Delete();
+            }
         }
     }
 
