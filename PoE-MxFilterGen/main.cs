@@ -17,7 +17,7 @@ namespace PoE_MxFilterGen
     {
         private static DateTime dt = DateTime.Now;
 
-        public static string version = "6.1.0";
+        public static string version = "6.2.0";
         public static string fDate = string.Format("{0}-{1}-{2}", dt.Day, dt.Month, dt.Year);
 
         public static string section = "";
@@ -64,10 +64,10 @@ namespace PoE_MxFilterGen
             if (!File.Exists("settings.json"))
             {
                 msg.CMW("ERROR: settings.json not found! Downloading a template...", true, 3);
-                web.DownloadFile("https://data.mxnet.xyz/poe/json/mxfiltergen_temp_settings.json", "settings.json");
+                web.DownloadFile("https://raw.githubusercontent.com/mikxqc/PoE-MxFilter-Data/master/json/mxfiltergen_temp_settings.json", "settings.json");
             }
 
-            web.DownloadFile("https://data.mxnet.xyz/poe/bin/mxfiltergen_updater.exe", "PoE-MxFilterGen-Updater.exe");
+            web.DownloadFile("https://raw.githubusercontent.com/mikxqc/PoE-MxFilter-Data/master/bin/mxfiltergen_updater.exe", "PoE-MxFilterGen-Updater.exe");
 
             msg.Splash();
 
@@ -88,7 +88,7 @@ namespace PoE_MxFilterGen
             giturl = json.settings.GetGIT();
 
             // Check for updates
-            string remote_version = web.ReadString(@"https://data.mxnet.xyz/poe/txt/mxfiltergen_version.txt");
+            string remote_version = web.ReadString(@"https://raw.githubusercontent.com/mikxqc/PoE-MxFilter-Data/master/txt/mxfiltergen_version.txt");
             if (version != remote_version && deb == false)
             {                  
                 Process.Start("PoE-MxFilterGen-Updater.exe");
@@ -207,7 +207,7 @@ namespace PoE_MxFilterGen
 
                 // Download the sounds from the remote list
                 msg.CMW($@"Downloading the latest sound...", true, 1);
-                var sl = web.ReadString("https://data.mxnet.xyz/poe/json/mxfiltergen_sound.json");
+                var sl = web.ReadString("https://raw.githubusercontent.com/mikxqc/PoE-MxFilter-Data/master/json/mxfiltergen_sound.json");
                 REMSND slj = JsonConvert.DeserializeObject<REMSND>(sl);
                 stotal = slj.sound.Count;
                 foreach (string s in slj.sound)
@@ -215,7 +215,7 @@ namespace PoE_MxFilterGen
                     sprog = sprog + 1;
                     msg.drawProgress(sprog, stotal);
                     if (File.Exists($@"{path}\My Games\Path of Exile\{s}")) { File.Delete($@"{path}\My Games\Path of Exile\{s}"); }
-                    web.DownloadFile($"https://data.mxnet.xyz/poe/mp3/{s}",$@"{path}\My Games\Path of Exile\{s}");
+                    web.DownloadFile($"https://raw.githubusercontent.com/mikxqc/PoE-MxFilter-Data/master/mp3/{s}",$@"{path}\My Games\Path of Exile\{s}");
                 }
 
                 // Clean all generated data

@@ -81,6 +81,7 @@ namespace PoE_MxFilterGen.json
                 minimumValue = js.minimumValue,
                 chancingMinValue = js.chancingMinValue,
                 verbose = js.verbose,
+                strict = js.strict,
                 section = section
             };
             var raw = JsonConvert.SerializeObject(se, Formatting.Indented);
