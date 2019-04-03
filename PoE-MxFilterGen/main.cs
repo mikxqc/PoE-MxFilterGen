@@ -72,7 +72,7 @@ namespace PoE_MxFilterGen
             msg.Splash();
 
             // Get current league from MxD
-            var ls = web.ReadString("https://data.mxnet.xyz/poe/json/mxfiltergen_var.json");
+            var ls = web.ReadString("https://raw.githubusercontent.com/mikxqc/PoE-MxFilter-Data/master/json/mxfiltergen_var.json");
             REMVAR lj = JsonConvert.DeserializeObject<REMVAR>(ls);
             league = lj.league;           
 
