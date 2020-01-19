@@ -201,7 +201,7 @@ namespace PoE_MxFilterGen
             Console.WriteLine("#### MxFilterGen");
             Console.WriteLine(string.Format("#### VERSION: {0}",main.version));
             Console.WriteLine("#### DEV: mikx");
-            Console.WriteLine("#### POWERED BY: poe.ninja");
+            Console.WriteLine("#### POWERED BY: poe.watch");
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.White;
         }

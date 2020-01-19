@@ -17,7 +17,7 @@ namespace PoE_MxFilterGen
     {
         private static DateTime dt = DateTime.Now;
 
-        public static string version = "6.2.0";
+        public static string version = "7.1.0";
         public static string fDate = string.Format("{0}-{1}-{2}", dt.Day, dt.Month, dt.Year);
 
         public static string section = "";
@@ -79,11 +79,9 @@ namespace PoE_MxFilterGen
             msg.CMW(string.Format("GIT: {0}", json.settings.GetGIT()), true, 1);
             msg.CMW(string.Format("API: {0}", json.settings.GetAPI()), true, 1);
             msg.CMW(string.Format("League: {0}", league), true, 1);
-            msg.CMW(string.Format("Confidence: {0}", json.settings.GetConfidence().ToString()), true, 1);
             msg.CMW(string.Format("Minimum Value: {0}c", json.settings.GetMinimumValue().ToString()), true, 1);
-            msg.CMW(string.Format("Chancing Min. Value: {0}c", json.settings.GetChancingMinValue().ToString()), true, 1);
             msg.CMW(string.Format("Verbose: {0}", json.settings.GetVerbose().ToString()), true, 1);
-            msg.CMW(string.Format("Strict: {0}", json.settings.GetStrict().ToString()), true, 1);
+            msg.CMW(string.Format("SSF: {0}", json.settings.GetSSF().ToString()), true, 1);
 
             giturl = json.settings.GetGIT();
 
@@ -121,19 +119,25 @@ namespace PoE_MxFilterGen
                 if (File.Exists($@"{path}\My Games\Path of Exile\MxFilter.filter")) { File.Delete($@"{path}\My Games\Path of Exile\MxFilter.filter"); }
 
                 // Get latest poe.ninja api
-                msg.CMW($"Downloading the latest API data from poe.ninja...", true, 1);
-                web.SaveString(json.settings.GetAPI() + "GetUniqueArmourOverview?league=" + league, "data/ninja.armour.json");
+                msg.CMW($"Downloading the latest API data from poe.watch...", true, 1);
+                /*web.SaveString(json.settings.GetAPI() + "GetUniqueArmourOverview?league=" + league, "data/ninja.armour.json");
                 web.SaveString(json.settings.GetAPI() + "GetUniqueWeaponOverview?league=" + league, "data/ninja.weapon.json");
                 web.SaveString(json.settings.GetAPI() + "GetUniqueAccessoryOverview?league=" + league, "data/ninja.accessory.json");
                 web.SaveString(json.settings.GetAPI() + "GetUniqueMapOverview?league=" + league, "data/ninja.map.json");
-                web.SaveString(json.settings.GetAPI() + "GetDivinationCardsOverview?league=" + league, "data/ninja.card.json");               
+                web.SaveString(json.settings.GetAPI() + "GetDivinationCardsOverview?league=" + league, "data/ninja.card.json"); */
+
+                web.SaveString(json.settings.GetAPI() + $"get?league={league}&category=armour", "data/poew.armour.json");
+                web.SaveString(json.settings.GetAPI() + $"get?league={league}&category=weapon", "data/poew.weapon.json");
+                web.SaveString(json.settings.GetAPI() + $"get?league={league}&category=accessory", "data/poew.accessory.json");
+                web.SaveString(json.settings.GetAPI() + $"get?league={league}&category=card", "data/poew.card.json");
+                web.SaveString(json.settings.GetAPI() + $"get?league={league}&category=currency", "data/poew.currency.json");
 
                 // Get Theme File(s)
                 web.DownloadFile($@"{giturl}/PoE-MxFilter-Structure/master/Chancing.json", @"structure\Chancing.json");
 
                 // Generate Filter Array
                 string[] filters;
-                if (json.settings.GetStrict()) { filters = new string[] { "Normal", "Strict" }; } else { filters = new string[] { "Normal" }; }
+                if (json.settings.GetSSF()) { filters = new string[] { "SSF" }; } else { filters = new string[] { "Normal", "Strict" }; }
 
                 foreach(string f in filters)
                 {
@@ -278,7 +282,7 @@ namespace PoE_MxFilterGen
             Type type = AppDomain.CurrentDomain.GetAssemblies().SelectMany(t => t.GetTypes()).Where(t => String.Equals(t.Name, "Generator", StringComparison.Ordinal)).First();
             object o = Activator.CreateInstance(type);
             MethodInfo mi = o.GetType().GetMethod("Gen");
-            Object[] ob = { json.settings.GetSection(), json.settings.GetAPI(), main.league, json.settings.GetMinimumValue(), json.settings.GetChancingMinValue(), json.settings.GetConfidence() };
+            Object[] ob = { json.settings.GetSection(), json.settings.GetAPI(), main.league, json.settings.GetMinimumValue() };
             mi.Invoke(o, ob);
         }
     }

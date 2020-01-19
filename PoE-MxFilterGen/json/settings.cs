@@ -12,11 +12,9 @@ namespace PoE_MxFilterGen.json
     {
         public string git { get; set; }
         public string api { get; set; }
-        public int confidence { get; set; }
         public int minimumValue { get; set; }
-        public int chancingMinValue { get; set; }
         public bool verbose { get; set; }
-        public bool strict { get; set; }
+        public bool ssf { get; set; }
         public string section { get; set; }
     }
 
@@ -34,22 +32,10 @@ namespace PoE_MxFilterGen.json
             return j.api;
         }
 
-        public static int GetConfidence()
-        {
-            SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
-            return j.confidence;
-        }
-
         public static int GetMinimumValue()
         {
             SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
             return j.minimumValue;
-        }
-
-        public static int GetChancingMinValue()
-        {
-            SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
-            return j.chancingMinValue;
         }
 
         public static bool GetVerbose()
@@ -64,10 +50,10 @@ namespace PoE_MxFilterGen.json
             return j.section;
         }
 
-        public static bool GetStrict()
+        public static bool GetSSF()
         {
             SETTINGS j = JsonConvert.DeserializeObject<SETTINGS>(File.ReadAllText("settings.json"));
-            return j.strict;
+            return j.ssf;
         }
 
         public static void WriteSection(string section)
@@ -77,11 +63,9 @@ namespace PoE_MxFilterGen.json
             {
                 git = js.git,
                 api = js.api,
-                confidence = js.confidence,
                 minimumValue = js.minimumValue,
-                chancingMinValue = js.chancingMinValue,
                 verbose = js.verbose,
-                strict = js.strict,
+                ssf = js.ssf,
                 section = section
             };
             var raw = JsonConvert.SerializeObject(se, Formatting.Indented);
